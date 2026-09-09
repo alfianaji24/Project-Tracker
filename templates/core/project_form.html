@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }} — Project Tracker{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-1">
+                <li class="breadcrumb-item"><a href="{% url 'project_list' %}">Projects</a></li>
+                <li class="breadcrumb-item active">{{ page_title }}</li>
+            </ol>
+        </nav>
+        <h4 class="mb-0">{{ page_title }}</h4>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form method="post" novalidate>
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+            {% endif %}
+
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">{{ form.project_code.label }} <span class="text-danger">*</span></label>
+                    {{ form.project_code }}
+                    {% if form.project_code.errors %}<div class="text-danger small">{{ form.project_code.errors }}</div>{% endif %}
+                    <div class="form-text">4 huruf kapital, contoh: AWBS</div>
+                </div>
+                <div class="col-md-9">
+                    <label class="form-label">{{ form.project_name.label }} <span class="text-danger">*</span></label>
+                    {{ form.project_name }}
+                    {% if form.project_name.errors %}<div class="text-danger small">{{ form.project_name.errors }}</div>{% endif %}
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">{{ form.customer.label }} <span class="text-danger">*</span></label>
+                    {{ form.customer }}
+                    {% if form.customer.errors %}<div class="text-danger small">{{ form.customer.errors }}</div>{% endif %}
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">{{ form.vendor.label }} <span class="text-danger">*</span></label>
+                    {{ form.vendor }}
+                    {% if form.vendor.errors %}<div class="text-danger small">{{ form.vendor.errors }}</div>{% endif %}
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">{{ form.contract_type.label }} <span class="text-danger">*</span></label>
+                    {{ form.contract_type }}
+                    {% if form.contract_type.errors %}<div class="text-danger small">{{ form.contract_type.errors }}</div>{% endif %}
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">{{ form.project_type.label }} <span class="text-danger">*</span></label>
+                    {{ form.project_type }}
+                    {% if form.project_type.errors %}<div class="text-danger small">{{ form.project_type.errors }}</div>{% endif %}
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">{{ form.top.label }} <span class="text-danger">*</span></label>
+                    {{ form.top }}
+                    {% if form.top.errors %}<div class="text-danger small">{{ form.top.errors }}</div>{% endif %}
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">{{ form.contract_start_date.label }} <span class="text-danger">*</span></label>
+                    {{ form.contract_start_date }}
+                    {% if form.contract_start_date.errors %}<div class="text-danger small">{{ form.contract_start_date.errors }}</div>{% endif %}
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">{{ form.contract_end_date.label }} <span class="text-danger">*</span></label>
+                    {{ form.contract_end_date }}
+                    {% if form.contract_end_date.errors %}<div class="text-danger small">{{ form.contract_end_date.errors }}</div>{% endif %}
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">{{ form.project_status.label }} <span class="text-danger">*</span></label>
+                    {{ form.project_status }}
+                    {% if form.project_status.errors %}<div class="text-danger small">{{ form.project_status.errors }}</div>{% endif %}
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">{{ form.work_value.label }} <span class="text-danger">*</span></label>
+                    {{ form.work_value }}
+                    {% if form.work_value.errors %}<div class="text-danger small">{{ form.work_value.errors }}</div>{% endif %}
+                    <div class="form-text">Format angka, contoh: 1250000000.00</div>
+                </div>
+            </div>
+
+            <div class="d-flex gap-2 mt-4">
+                <button type="submit" class="btn btn-primary">{{ submit_label }}</button>
+                <a href="{% if object %}{% url 'project_detail' object.pk %}{% else %}{% url 'project_list' %}{% endif %}" class="btn btn-outline-secondary">Batal</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.getElementById('id_project_code')?.addEventListener('input', function () {
+        this.value = this.value.toUpperCase();
+    });
+</script>
+{% endblock %}

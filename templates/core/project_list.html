@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+{% block title %}Projects — Project Tracker{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h4 class="mb-0">Project Management</h4>
+        <small class="text-muted">{{ total_count }} project ditemukan</small>
+    </div>
+    <a href="{% url 'project_create' %}" class="btn btn-primary">
+        <i class="bi bi-plus-lg me-1"></i>Tambah Project
+    </a>
+</div>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label small text-muted">{{ filter_form.q.label }}</label>
+                {{ filter_form.q }}
+            </div>
+            <div class="col-md-4">
+                <label class="form-label small text-muted">{{ filter_form.customer.label }}</label>
+                {{ filter_form.customer }}
+            </div>
+            <div class="col-md-4">
+                <label class="form-label small text-muted">{{ filter_form.vendor.label }}</label>
+                {{ filter_form.vendor }}
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small text-muted">{{ filter_form.contract_type.label }}</label>
+                {{ filter_form.contract_type }}
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small text-muted">{{ filter_form.project_type.label }}</label>
+                {{ filter_form.project_type }}
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small text-muted">{{ filter_form.top.label }}</label>
+                {{ filter_form.top }}
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small text-muted">{{ filter_form.project_status.label }}</label>
+                {{ filter_form.project_status }}
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small text-muted">{{ filter_form.contract_start_from.label }}</label>
+                {{ filter_form.contract_start_from }}
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small text-muted">{{ filter_form.contract_start_to.label }}</label>
+                {{ filter_form.contract_start_to }}
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small text-muted">{{ filter_form.contract_end_from.label }}</label>
+                {{ filter_form.contract_end_from }}
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small text-muted">{{ filter_form.contract_end_to.label }}</label>
+                {{ filter_form.contract_end_to }}
+            </div>
+            <div class="col-12">
+                <div class="form-check">
+                    {{ filter_form.show_inactive }}
+                    <label class="form-check-label" for="{{ filter_form.show_inactive.id_for_label }}">
+                        {{ filter_form.show_inactive.label }}
+                    </label>
+                </div>
+            </div>
+            <div class="col-12 d-flex gap-2">
+                <button type="submit" class="btn btn-primary btn-sm">
+                    <i class="bi bi-funnel me-1"></i>Filter
+                </button>
+                <a href="{% url 'project_list' %}" class="btn btn-outline-secondary btn-sm">Reset</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead>
+                <tr>
+                    <th style="width:50px">No</th>
+                    <th>Project Code</th>
+                    <th>Project Name</th>
+                    <th>Customer</th>
+                    <th>Vendor</th>
+                    <th>Contract</th>
+                    <th>Start</th>
+                    <th>Finish</th>
+                    <th>Status</th>
+                    <th style="width:100px"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for project in projects %}
+                <tr {% if project.status == 'inactive' %}class="table-secondary"{% endif %}>
+                    <td>{{ page_obj.start_index|add:forloop.counter0 }}</td>
+                    <td><code>{{ project.project_code }}</code></td>
+                    <td>
+                        <a href="{% url 'project_detail' project.pk %}" class="text-decoration-none fw-medium">
+                            {{ project.project_name }}
+                        </a>
+                    </td>
+                    <td>{{ project.customer.code }}</td>
+                    <td>{{ project.vendor.code }}</td>
+                    <td>{{ project.contract_type.code }}</td>
+                    <td>{{ project.contract_start_date|date:"d M Y" }}</td>
+                    <td>{{ project.contract_end_date|date:"d M Y" }}</td>
+                    <td>
+                        <span class="badge bg-primary badge-status">{{ project.project_status.code }}</span>
+                        {% if project.status == 'inactive' %}
+                            <span class="badge bg-secondary badge-status">Nonaktif</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'project_detail' project.pk %}" class="btn btn-sm btn-outline-primary" title="Detail">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                        <a href="{% url 'project_edit' project.pk %}" class="btn btn-sm btn-outline-secondary" title="Edit">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="10" class="text-center text-muted py-4">
+                        <i class="bi bi-inbox fs-3 d-block mb-2"></i>
+                        Belum ada project. <a href="{% url 'project_create' %}">Tambah project pertama</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if page_obj.has_other_pages %}
+    <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+        <small class="text-muted">
+            Halaman {{ page_obj.number }} dari {{ page_obj.paginator.num_pages }}
+        </small>
+        <nav>
+            <ul class="pagination pagination-sm mb-0">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">&laquo;</a>
+                    </li>
+                {% endif %}
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">&raquo;</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

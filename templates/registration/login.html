@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Login — Project Tracker{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-5 col-lg-4">
+        <div class="card">
+            <div class="card-body p-4">
+                <div class="text-center mb-4">
+                    <i class="bi bi-kanban fs-1 text-primary"></i>
+                    <h4 class="mt-2 mb-0">Project Tracker</h4>
+                    <p class="text-muted small">Project & Contract Management</p>
+                </div>
+
+                {% if form.errors %}
+                    <div class="alert alert-danger py-2">
+                        Username atau password salah.
+                    </div>
+                {% endif %}
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="id_username" class="form-label">Username</label>
+                        <input type="text" name="username" id="id_username" class="form-control" autofocus required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="id_password" class="form-label">Password</label>
+                        <input type="password" name="password" id="id_password" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-box-arrow-in-right me-1"></i>Login
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

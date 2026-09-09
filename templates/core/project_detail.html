@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% load core_extras %}
+
+{% block title %}{{ project.project_name }} — Project Tracker{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-1">
+                <li class="breadcrumb-item"><a href="{% url 'project_list' %}">Projects</a></li>
+                <li class="breadcrumb-item active">{{ project.project_code }}</li>
+            </ol>
+        </nav>
+        <h4 class="mb-0">{{ project.project_name }}</h4>
+        <small class="text-muted">Project Code: <code>{{ project.project_code }}</code></small>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{% url 'project_edit' project.pk %}" class="btn btn-outline-primary btn-sm">
+            <i class="bi bi-pencil me-1"></i>Edit
+        </a>
+        {% if project.status == 'active' %}
+            <a href="{% url 'project_deactivate' project.pk %}" class="btn btn-outline-danger btn-sm">
+                <i class="bi bi-slash-circle me-1"></i>Nonaktifkan
+            </a>
+        {% else %}
+            <form method="post" action="{% url 'project_reactivate' project.pk %}" class="d-inline">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline-success btn-sm">
+                    <i class="bi bi-check-circle me-1"></i>Aktifkan Kembali
+                </button>
+            </form>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-8">
+        <div class="card detail-card">
+            <div class="card-header bg-white fw-semibold">Informasi Project</div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <dl>
+                            <dt>Customer</dt>
+                            <dd>{{ project.customer.code }} — {{ project.customer.name }}</dd>
+                            <dt>Vendor</dt>
+                            <dd>{{ project.vendor.code }} — {{ project.vendor.name }}</dd>
+                            <dt>Contract Type</dt>
+                            <dd>{{ project.contract_type.code }} — {{ project.contract_type.name }}</dd>
+                            <dt>Project Type</dt>
+                            <dd>{{ project.project_type.code }} — {{ project.project_type.name }}</dd>
+                            <dt>TOP</dt>
+                            <dd>{{ project.top.code }} — {{ project.top.name }}</dd>
+                        </dl>
+                    </div>
+                    <div class="col-md-6">
+                        <dl>
+                            <dt>Contract Start</dt>
+                            <dd>{{ project.contract_start_date|date:"d F Y" }}</dd>
+                            <dt>Contract End</dt>
+                            <dd>{{ project.contract_end_date|date:"d F Y" }}</dd>
+                            <dt>Sisa Hari Kontrak</dt>
+                            <dd>
+                                {% if project.remaining_contract_days is not None %}
+                                    {% if project.remaining_contract_days >= 0 %}
+                                        <span class="badge bg-info">{{ project.remaining_contract_days }} Days</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Expired {{ project.remaining_contract_days|floatformat:0|cut:"-" }} hari lalu</span>
+                                    {% endif %}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </dd>
+                            <dt>Work Value</dt>
+                            <dd class="fs-5 fw-semibold text-primary">{{ project.work_value|rupiah }}</dd>
+                            <dt>Status</dt>
+                            <dd>
+                                <span class="badge bg-primary">{{ project.project_status.code }} — {{ project.project_status.name }}</span>
+                                {% if project.status == 'inactive' %}
+                                    <span class="badge bg-secondary">Nonaktif</span>
+                                {% endif %}
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header bg-white fw-semibold">Audit</div>
+            <div class="card-body small text-muted">
+                <div class="mb-2">
+                    <strong>Dibuat:</strong><br>
+                    {{ project.created_at|date:"d M Y, H:i" }}
+                </div>
+                <div>
+                    <strong>Diperbarui:</strong><br>
+                    {{ project.updated_at|date:"d M Y, H:i" }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
